@@ -25,12 +25,11 @@ class Authentication {
         return await bcrypt.compare(text, encryptedText);
     }
 
-    static generateAccessToken(id, role, username, email) {
+    static generateAccessToken(id, role, email) {
         const secretKey = process.env.JWT_SECRET_KEY || 'my-secret-key';
         const payload = {
             userId: id,
             role: role,
-            username: username,
             email: email,
         };
         const optionAccess = { expiresIn: process.env.JWT_ACCESS_EXPIRES_IN };
