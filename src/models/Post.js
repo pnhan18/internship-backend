@@ -1,6 +1,6 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const dbConfig = require("../config/db.config");
-
+const Category = require('./Category');
 const sequelize = new Sequelize(
   dbConfig.db.database,
   dbConfig.db.username,
@@ -29,5 +29,5 @@ const Post = sequelize.define(
   },
   { tableName: "posts", timestamps: false }
 );
-
+Post.belongsTo(Category, { foreignKey: 'category_id' });
 module.exports = Post;

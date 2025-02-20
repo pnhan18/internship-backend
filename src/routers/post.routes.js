@@ -1,8 +1,7 @@
 const express = require("express");
-const { searchPostsByProductName } = require("../controllers/post.controller");
+const postController = require("../controllers/post.controller");
 
 const router = express.Router();
-
-router.get("/search", searchPostsByProductName);
+router.get("/all", postController.searchPosts);//API lọc bài đăng theo tên danh mục http://localhost:4000/api/posts/all?location=New%20York&min_price=100&max_price=500000
 
 module.exports = router;

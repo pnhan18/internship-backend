@@ -1,19 +1,31 @@
 const PostService = require("../services/postService");
 
-const searchPostsByProductName = async (req, res) => {
+const searchPosts = async (req, res) => {
   try {
-    const { product_name, product_status } = req.query;
+    const { categoryName, product_name, location, min_price, max_price, product_status, page, pageSize } = req.query;
 
-    const posts = await PostService.searchPosts(product_name, product_status);
+    // Chuyển đổi giá trị số
+    const filters = {
+      categoryName,
+      product_name,
+      location,
+      minPrice: min_price ? parseFloat(min_price) : undefined,
+      maxPrice: max_price ? parseFloat(max_price) : undefined,
+      product_status,
+    };
 
-    if (posts.length === 0) {
-      return res.status(404).json({ message: "Không tìm thấy bài đăng nào." });
-    }
+    const pagination = {
+      page: page ? parseInt(page) : 1,
+      pageSize: pageSize ? parseInt(pageSize) : 10,
+    };
 
-    res.status(200).json({ posts });
+    // Gọi service
+    const result = await PostService.getALLPostsByFilters( filters, pagination);
+
+    return res.status(200).json({ success: true, message: "Lấy bài đăng thành công", data: result });
   } catch (error) {
-    res.status(400).json({ message: error.message || "Lỗi server." });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-module.exports = { searchPostsByProductName };
+module.exports = {  searchPosts };
