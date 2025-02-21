@@ -1,15 +1,8 @@
 const { Sequelize, DataTypes } = require("sequelize");
-const dbConfig = require("../config/db.config");
 const Category = require('./Category');
-const sequelize = new Sequelize(
-  dbConfig.db.database,
-  dbConfig.db.username,
-  dbConfig.db.password,
-  {
-    host: dbConfig.db.host,
-    dialect: "mysql",
-  }
-);
+const Database = require('../database/mysql.database');
+const sequelize = Database.getInstance().sequelize;
+
 
 const Post = sequelize.define(
   "Post",
