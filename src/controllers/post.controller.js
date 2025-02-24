@@ -1,4 +1,5 @@
 const PostService = require("../services/postService");
+const { CREATED } = require("../core/success.response");
 
 const searchPostsByProductName = async (req, res) => {
   try {
@@ -16,4 +17,11 @@ const searchPostsByProductName = async (req, res) => {
   }
 };
 
-module.exports = { searchPostsByProductName };
+const createPost = async (req, res) => {
+  const { user_id, category_id, title, product_name, description, price, product_status, location} = req.body;
+  const images = req.files;
+  const newPost = await PostService.createPost(user_id, category_id, title, product_name, description, price, product_status, location, images);
+  new CREATED("Tạo bài đăng thành công", newPost).send(res);
+}
+
+module.exports = { searchPostsByProductName, createPost };

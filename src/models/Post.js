@@ -1,15 +1,5 @@
-const { Sequelize, DataTypes } = require("sequelize");
-const dbConfig = require("../config/db.config");
-
-const sequelize = new Sequelize(
-  dbConfig.db.database,
-  dbConfig.db.username,
-  dbConfig.db.password,
-  {
-    host: dbConfig.db.host,
-    dialect: "mysql",
-  }
-);
+const { DataTypes, Sequelize } = require("sequelize");
+const sequelize = require("../database/mysql.database").getInstance().sequelize;
 
 const Post = sequelize.define(
   "Post",
@@ -23,9 +13,9 @@ const Post = sequelize.define(
     product_status: { type: DataTypes.STRING, allowNull: false },
     price: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
     location: { type: DataTypes.STRING, allowNull: true },
-    status: { type: DataTypes.STRING, allowNull: false },
-    created_at: { type: DataTypes.DATE, defaultValue: Sequelize.literal("CURRENT_TIMESTAMP") },
-    updated_at: { type: DataTypes.DATE, defaultValue: Sequelize.literal("CURRENT_TIMESTAMP") },
+    status: { type: DataTypes.STRING, allowNull: false, defaultValue: "active" },
+    created_at: { type: DataTypes.DATE, defaultValue: Sequelize.NOW  },
+    updated_at: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
   },
   { tableName: "posts", timestamps: false }
 );

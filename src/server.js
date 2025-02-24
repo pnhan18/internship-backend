@@ -16,6 +16,7 @@ app.use(express.urlencoded({ extended: true })); // Hỗ trợ xử lý form dat
 
 Database.getInstance();
 
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use('/api', AuthRoutes);
 app.use("/api/posts", postRoutes);

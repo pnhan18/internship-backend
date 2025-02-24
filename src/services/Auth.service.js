@@ -15,20 +15,25 @@ class AuthService {
             throw new ConflictRequestError('Email already exists');
         }
         const hashedPassword = await Authentication.passwordHash(password);
-        const transaction = await sequelize.transaction();
-        const user = await User.create({
-            email,
-            password_hash: hashedPassword
-        }, {
-            transaction
-        });
-        await UserInfor.create({
-            userId: user.id,
-            phone
-        }, {
-            transaction
-        });
-        await transaction.commit();
+        try {
+            const transaction = await sequelize.transaction();
+            const user = await User.create({
+                email,
+                password_hash: hashedPassword
+            }, {
+                transaction
+            });
+            await UserInfor.create({
+                userId: user.id,
+                phone
+            }, {
+                transaction
+            });
+            await transaction.commit();
+        } catch (error) {
+            await transaction.rollback();
+            throw new BadRequestError('Đã có lỗi xảy ra');
+        }
     }
 
     static login = async (email, password) => {
