@@ -1,11 +1,11 @@
 
 const User = require("../models/User.model");
-const UserInfor = require("../models/UserInfor.model");
+const UserInfo = require("../models/UserInfo.model");
 class UserService {
-    async getUserById(userId) {
+    async getUserByEmail(email) {
         const user = await User.findOne({
-            where: { id: userId },
-            include: [{ model: UserInfor, attributes: ['name', 'address', 'avatar_url', 'phone', 'rating'] }],
+            where: { email: email },
+            include: [{ model: UserInfo, attributes: ['name', 'address', 'avatar_url', 'phone', 'rating'] }],
             attributes: ['email', 'created_at']
         });
         if (!user) return null;
@@ -13,31 +13,31 @@ class UserService {
         return {
             email: user.email,
             created_at: user.created_at,
-            name: user.UserInfor?.name || null,
-            address: user.UserInfor?.address || null,
-            phone: user.UserInfor?.name ||null,
-            avatar_url: user.UserInfor?.avatar_url||null,
-            rating: user.UserInfor?.rating || null
+            name: user.UserInfo?.name || null,
+            address: user.UserInfo?.address || null,
+            phone: user.UserInfo?.phone ||null,
+            avatar_url: user.UserInfo?.avatar_url||null,
+            rating: user.UserInfo?.rating || null
         };
     }
-    async updateUserById(userId,email, name, address, phone, avatar_url) {
+    async updateUserByEmail(emailUser,email, name, address, phone, avatar_url) {
         // Cập nhật bảng user
-        const user = await User.findByPk(userId);
+        const user = await User.findOne({ where: { email: emailUser } });
         if (!user) return null;
 
         if (email) user.email = email;
         await user.save();
 
         // Cập nhật bảng user_infor
-        let userInfor = await UserInfor.findOne({ where: { user_id: userId } });
-        if (!userInfor) {
-            userInfor = await UserInfor.create({ user_id: userId, name, address, phone, avatar_url });
+        let userInfo = await UserInfo.findOne({ where: { user_id: user.id } });
+        if (!userInfo) {
+            userInfo = await UserInfo.create({ user_id: user.id, name, address, phone, avatar_url });
         } else {
-            if (name) userInfor.name = name;
-            if (address) userInfor.address = address;
-            if (phone) userInfor.phone = phone;
-            if (avatar_url) userInfor.avatar_url = avatar_url;
-            await userInfor.save();
+            if (name) userInfo.name = name;
+            if (address) userInfo.address = address;
+            if (phone) userInfo.phone = phone;
+            if (avatar_url) userInfo.avatar_url = avatar_url;
+            await userInfo.save();
         }
 
         return { email: user.email, name, address, phone, avatar_url };

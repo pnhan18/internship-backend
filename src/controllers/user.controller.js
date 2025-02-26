@@ -2,8 +2,8 @@ const userService = require('../services/user.service');
 
 const getUser = async (req, res) => {
     try {
-        const userId = req.params.id;
-        const userData = await userService.getUserById(userId);
+        const email = req.params.email;
+        const userData = await userService.getUserByEmail(email);
         res.status(200).json(userData);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -11,9 +11,9 @@ const getUser = async (req, res) => {
 };
 const updateUser = async(req, res)=> {
     try {
-        const userId = req.params.id;
+        const emailUser = req.params.emailUser;
         const { email, name, address, phone, avatar_url } = req.body;
-        const updatedUser = await userService.updateUserById(userId,email, name, address, phone, avatar_url);
+        const updatedUser = await userService.updateUserByEmail(emailUser,email, name, address, phone, avatar_url);
 
         if (!updatedUser) {
             return res.status(404).json({ message: 'User not found' });
