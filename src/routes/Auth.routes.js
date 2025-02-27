@@ -9,5 +9,4 @@ const router = express.Router();
 
 router.post("/signup", validate(userSchema),CatchAsync(AuthController.signUp));
 router.post("/login", validate(loginSchema),CatchAsync(AuthController.login));
-
 module.exports = router;

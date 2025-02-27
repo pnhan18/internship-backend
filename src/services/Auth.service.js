@@ -34,6 +34,7 @@ class AuthService {
             await transaction.rollback();
             throw new BadRequestError('Đã có lỗi xảy ra');
         }
+     
     }
 
     static login = async (email, password) => {
