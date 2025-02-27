@@ -11,7 +11,8 @@ class AuthService {
                 email
             }
         });
-        if (holder !== null) {
+      
+        if(holder !== null) {
             throw new ConflictRequestError('Email already exists');
         }
         const hashedPassword = await Authentication.passwordHash(password);
