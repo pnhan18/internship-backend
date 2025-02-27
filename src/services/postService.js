@@ -1,10 +1,15 @@
 const { Op } = require("sequelize");
 const Post = require("../models/Post");
 const Category = require("../models/Category");
+const Post_images = require("../models/Post_images");
+const Database = require('../database/mysql.database');
+const Sequelize = Database.getInstance().sequelize;
+
 class PostService {
-  static async getALLPostsByFilters( filters = {}, pagination = { page: 1, pageSize: 10 }) {
+  static async getALLPostsByFilters( filters = {}, pagination = { page: 1, pageSize: 10 },status="active") {
     try {
       let whereCondition = {};
+      let order = [];
   
       // Nếu có categoryName, tìm category_id
       if (filters.categoryName) {
@@ -35,6 +40,10 @@ class PostService {
       if (filters.product_status) {
         whereCondition.product_status = filters.product_status;
       }
+      if (filters.newPost=="true") {
+        order = [["created_at", "DESC"]];
+      }
+      whereCondition.status=status;
   
       // Phân trang
       const offset = (pagination.page - 1) * pagination.pageSize;
@@ -44,7 +53,18 @@ class PostService {
       const { count, rows } = await Post.findAndCountAll({
         where: whereCondition,
         limit,
-        offset
+        attributes: { exclude: ["product_name","description", "product_status","status","updated_at"] },
+        offset,
+        order,
+        include: [
+          {
+            model: Post_images,  // Bảng chứa ảnh
+            attributes: ["image_url"], // Chỉ lấy ảnh
+            required: false,
+            as: "images", // Không bắt buộc phải có ảnh
+            where: { id: { [Op.eq]: Sequelize.literal(`(SELECT MIN(id) FROM post_images WHERE post_images.post_id = Post.id)`) } } // Chỉ lấy ảnh đầu tiên
+          }
+        ]
       });
   
       return {
@@ -59,7 +79,52 @@ class PostService {
       throw new Error('Lỗi server');
     }
   }
+  static async getLatestPosts() {
+    try {
+      const latestPosts = await Post.findAll({
+        attributes: { exclude: ["product_name","description", "product_status","status","updated_at"] },
+        limit: 10, // Giới hạn 30 sản phẩm
+        where: { status: "active" },
+        order: [["created_at", "DESC"]], // Sắp xếp mới nhất trước
+        include: [
+          {
+            model: Post_images,  // Bảng chứa ảnh
+            attributes: ["image_url"], // Chỉ lấy ảnh
+            required: false,
+            as: "images", // Không bắt buộc phải có ảnh
+            where: { id: { [Op.eq]: Sequelize.literal(`(SELECT MIN(id) FROM post_images WHERE post_images.post_id = Post.id)`) } } // Chỉ lấy ảnh đầu tiên
+          }
+        ]
+      });
+
+      return latestPosts;
+    } catch (error) {
+      throw new Error("Lỗi khi lấy sản phẩm mới nhất: " + error.message);
+    }
+  }
+  static async getPostDetailById(postId) {
+    try {
+      const post = await Post.findOne({
+        where: { id: postId },
+        include: [
+          {
+            model: Category, // Lấy thông tin danh mục
+            attributes: ["name","description"],
+          },
+          {
+            model: Post_images, // Lấy danh sách ảnh bài đăng
+            attributes: ["image_url"],
+            as: "images",
+          },
+        ],
+      });
   
+      return post; // Trả về bài đăng (hoặc null nếu không tìm thấy)
+    } catch (error) {
+      console.error("Lỗi lấy bài đăng:", error);
+      throw new Error("Lỗi server");
+    }
+  }
 }
 
 module.exports = PostService;

@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: true })); // Hỗ trợ xử lý form dat
 Database.getInstance();
 
 // Routes
-app.use("/api/posts", postRoutes);
+app.use("/", postRoutes);
 
 // Middleware xử lý lỗi
 app.use(errorMiddleware);

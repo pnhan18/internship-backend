@@ -2,7 +2,7 @@ const { Sequelize, DataTypes } = require("sequelize");
 const Category = require('./Category');
 const Database = require('../database/mysql.database');
 const sequelize = Database.getInstance().sequelize;
-
+const Post_images = require("../models/Post_images");
 
 const Post = sequelize.define(
   "Post",
@@ -22,5 +22,6 @@ const Post = sequelize.define(
   },
   { tableName: "posts", timestamps: false }
 );
+Post.hasMany(Post_images, { foreignKey: "post_id", as: "images" })
 Post.belongsTo(Category, { foreignKey: 'category_id' });
 module.exports = Post;
