@@ -13,17 +13,21 @@ app.use(cors()); // Hỗ trợ CORS
 app.use(express.json()); // Xử lý JSON request body
 app.use(express.urlencoded({ extended: true })); // Hỗ trợ xử lý form data
 
-// Kết nối cơ sở dữ liệu
 Database.getInstance();
 
-// Routes
-app.use("/", postRoutes);
-app.use("/", categoryRoutes);
-// Middleware xử lý lỗi
-app.use(errorMiddleware);
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use('/api', AuthRoutes);
+app.use("/api/posts", postRoutes);
 
-// Khởi chạy server
-const PORT = appConfig.port || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running on port ${PORT}`);
+app.use(express.json());
+app.use('/', AuthRoutes);
+
+const server = app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
 });
+
+app.use("*", (req, res, next) => {
+    next(new NotFoundRequestError());
+});
+app.use(handleErrorsMiddeleware);
