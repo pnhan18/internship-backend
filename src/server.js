@@ -1,11 +1,10 @@
-const express = require('express');
-const appConfig = require('./config/app.config');
-const Database = require('./database/mysql.database');
-const AuthRoutes = require('./routes/Auth.routes');
-const handleErrorsMiddeleware = require('./middlewares/error.middleware');
+const express = require("express");
 const cors = require("cors");
-const postRoutes = require("./routes/post.routes");
-const errorMiddleware = require('./middlewares/error.middleware');
+const appConfig = require("./config/app.config");
+const Database = require("./database/mysql.database");
+const postRoutes = require("./routers/post.routes");
+const categoryRoutes = require("./routers/category.routes");
+const errorMiddleware = require("./middleware/error.middleware");
 
 const app = express();
 
