@@ -160,5 +160,6 @@ class PostService {
       throw new BadRequestError("Đã xảy ra lỗi khi tạo bài đăng, vui lòng thử lại.");
     }
   }
+}
 
 module.exports = PostService;

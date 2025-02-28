@@ -5,6 +5,7 @@ const AuthRoutes = require('./routes/Auth.routes');
 const handleErrorsMiddeleware = require('./middlewares/error.middleware');
 const cors = require("cors");
 const postRoutes = require("./routes/post.routes");
+const userRoutes = require("./routes/user.routes");
 const errorMiddleware = require('./middlewares/error.middleware');
 const { NotFoundRequestError } = require('./core/error.response');
 
