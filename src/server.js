@@ -3,6 +3,7 @@ const cors = require("cors");
 const appConfig = require("./config/app.config");
 const Database = require("./database/mysql.database");
 const postRoutes = require("./routers/post.routes");
+const categoryRoutes = require("./routers/category.routes");
 const errorMiddleware = require("./middleware/error.middleware");
 
 const app = express();
@@ -17,7 +18,7 @@ Database.getInstance();
 
 // Routes
 app.use("/", postRoutes);
-
+app.use("/", categoryRoutes);
 // Middleware xử lý lỗi
 app.use(errorMiddleware);
 
