@@ -26,7 +26,7 @@ const UserInfor = sequelize.define('UserInfor', {
     },
     avatar: {
         type: DataTypes.TEXT,
-    },
+    },  
     rating: {
         type: DataTypes.INTEGER,
         defaultValue: 5,

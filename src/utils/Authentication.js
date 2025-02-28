@@ -44,6 +44,12 @@ class Authentication {
         const optionRefresh = { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN };
         return jwt.sign(payload, secretKey, optionRefresh);
     }
+    static generateResetToken(email) {
+        const secretKey = process.env.JWT_SECRET_KEY;
+        const payload = { email: email, type: 'reset' };
+        const optionReset = { expiresIn: process.env.JWT_ACCESS_FORGOT_PASSWORD_EXPIRES_IN };
+        return jwt.sign(payload, secretKey, optionReset);
+    }
 
     static validateToken(token) {
         try {

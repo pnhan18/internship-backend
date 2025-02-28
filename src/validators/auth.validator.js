@@ -17,6 +17,27 @@ const loginSchema = Joi.object({
             'string.min': 'Mật khẩu phải có ít nhất 8 ký tự',
             'any.required': 'Mật khẩu là bắt buộc'
         })
+        
+});
+const forgotPasswordSchema = Joi.object({
+    email: Joi.string()
+        .required()
+        .messages({
+            'string.empty': 'Email không hợp lệ',
+            'any.required': 'Email là bắt buộc'
+        })
 });
 
-module.exports = { loginSchema };
+const resetPasswordSchema = Joi.object({
+    password: Joi.string()
+        .min(6)
+        .max(30)
+        .required()
+        .messages({
+            'string.min': 'Mật khẩu phải có ít nhất 6 ký tự',
+            'string.max': 'Mật khẩu không được quá 30 ký tự',
+            'any.required': 'Mật khẩu là bắt buộc'
+        })
+});
+
+module.exports = { loginSchema, forgotPasswordSchema, resetPasswordSchema };

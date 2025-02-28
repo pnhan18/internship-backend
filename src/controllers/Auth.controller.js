@@ -12,6 +12,18 @@ class AuthController {
         const { email, password } = req.body;
         new CREATED("Successfully logged in!", await AuthService.login(email, password)).send(res);
     }
+    static forgotPassword = async (req, res) => {
+        const { email } = req.body;
+        await AuthService.forgotPassword(email);
+        new OK("Reset password email sent!").send(res);
+    }
+
+    static resetPassword = async (req, res) => {
+        const { token } = req.params;
+        const { password } = req.body;
+        await AuthService.resetPassword(token, password);
+        new OK("Password reset successful!").send(res);
+    }
 }
 
 module.exports = AuthController;
