@@ -1,4 +1,4 @@
-const Category = require("../models/Category");
+const Category = require("../models/Category.model");
 
 class CategoryService {
   async getAllCategoryNames() {

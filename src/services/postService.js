@@ -1,8 +1,11 @@
 const { Op } = require("sequelize");
-const Post = require("../models/Post");
-const Category = require("../models/Category");
-const Post_images = require("../models/Post_images");
+const Post = require("../models/Post.model");
+const Category = require("../models/Category.model");
+const Post_images = require("../models/PostImage.model");
+const User = require("../models/User.model");
+const UserInfo = require("../models/UserInfo.model");
 const Database = require('../database/mysql.database');
+const UserService = require('./user.service')
 const Sequelize = Database.getInstance().sequelize;
 
 class PostService {
@@ -115,6 +118,16 @@ class PostService {
             model: Post_images, // Lấy danh sách ảnh bài đăng
             attributes: ["image_url"],
             as: "images",
+          },
+          {
+            model: User, // Lấy thông tin người đăng bài
+            attributes: ["email"],
+            include: [
+              {
+                model: UserInfo, // Lấy thông tin chi tiết từ User_info
+                attributes: ["name", "address", "phone","avatar_url","rating"],
+              },
+            ],
           },
         ],
       });

@@ -22,9 +22,9 @@ Database.getInstance();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use('/api', AuthRoutes);
-app.use("/api/posts", postRoutes);
-app.use("/api/user", userRoutes);
-app.use("/api/categories",categories );
+app.use("/api", postRoutes);
+app.use("/api", userRoutes);
+app.use("/api",categories );
 
 app.use("*", (req, res, next) => {
     next(new NotFoundRequestError());

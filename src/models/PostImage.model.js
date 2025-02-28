@@ -1,7 +1,7 @@
 const { DataTypes, Sequelize } = require('sequelize');
 const Database = require('../database/mysql.database');
 const sequelize = Database.getInstance().sequelize;
-const Post = require('./Post');
+const Post = require('./Post.model');
 
 const PostImage = sequelize.define('PostImage', {
     id: {
@@ -27,7 +27,8 @@ const PostImage = sequelize.define('PostImage', {
 
 Post.hasMany(PostImage, {
     foreignKey: 'post_id',
-    onDelete: 'CASCADE'
+    onDelete: 'CASCADE',
+    as: "images",
 });
 PostImage.belongsTo(Post, {
     foreignKey: 'post_id',
