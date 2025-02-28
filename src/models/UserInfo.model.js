@@ -2,7 +2,7 @@ const { DataTypes } = require('sequelize');
 const Database = require('../database/mysql.database');
 const sequelize = Database.getInstance().sequelize;
 
-const UserInfor = sequelize.define('UserInfor', {
+const UserInfo = sequelize.define('UserInfo', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -24,7 +24,7 @@ const UserInfor = sequelize.define('UserInfor', {
         type: DataTypes.STRING(255),
         allowNull: false,
     },
-    avatar: {
+    avatar_url: {
         type: DataTypes.TEXT,
     },
     rating: {
@@ -32,13 +32,13 @@ const UserInfor = sequelize.define('UserInfor', {
         defaultValue: 5,
     }
 }, {
-    tableName: 'user_infor',
+    tableName: 'user_info',
     frezeTableName: true,
     timestamps: false,
 });
 
 const User = require('./User.model');
-User.hasOne(UserInfor, { foreignKey: 'userId' });
-UserInfor.belongsTo(User, { foreignKey: 'userId' });
+User.hasOne(UserInfo, { foreignKey: 'userId' });
+UserInfo.belongsTo(User, { foreignKey: 'userId' });
 
-module.exports = UserInfor;
+module.exports = UserInfo;

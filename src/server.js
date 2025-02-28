@@ -1,10 +1,12 @@
-const express = require("express");
+const express = require('express');
+const appConfig = require('./config/app.config');
+const Database = require('./database/mysql.database');
+const AuthRoutes = require('./routes/Auth.routes');
+const handleErrorsMiddeleware = require('./middlewares/error.middleware');
 const cors = require("cors");
-const appConfig = require("./config/app.config");
-const Database = require("./database/mysql.database");
-const postRoutes = require("./routers/post.routes");
-const categoryRoutes = require("./routers/category.routes");
-const errorMiddleware = require("./middleware/error.middleware");
+const postRoutes = require("./routes/post.routes");
+const errorMiddleware = require('./middlewares/error.middleware');
+const { NotFoundRequestError } = require('./core/error.response');
 
 const app = express();
 
@@ -19,15 +21,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use('/api', AuthRoutes);
 app.use("/api/posts", postRoutes);
-
-app.use(express.json());
-app.use('/', AuthRoutes);
-
-const server = app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
-});
+app.use("/api/user", userRoutes);
 
 app.use("*", (req, res, next) => {
     next(new NotFoundRequestError());
 });
 app.use(handleErrorsMiddeleware);
+
+// Middleware xử lý lỗi
+app.use(errorMiddleware);
+
+// Khởi chạy server
+const PORT = appConfig.port || 5000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server is running on port ${PORT}`);
+});
