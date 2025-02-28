@@ -1,4 +1,4 @@
-const { DataTypes, Sequelize, ENUM } = require("sequelize");
+const { DataTypes, Sequelize } = require("sequelize");
 const sequelize = require("../database/mysql.database").getInstance().sequelize;
 
 const Post = sequelize.define(
@@ -13,7 +13,7 @@ const Post = sequelize.define(
     product_status: { type: DataTypes.STRING, allowNull: false },
     price: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
     location: { type: DataTypes.STRING, allowNull: true },
-    status: { type: ENUM("còn hàng", "hết hàng"), allowNull: false, defaultValue: "còn hàng" },
+    status: { type: DataTypes.ENUM("active", "pending", "block"), allowNull: false, defaultValue: "active" },
     created_at: { type: DataTypes.DATE, defaultValue: Sequelize.NOW  },
     updated_at: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
   },

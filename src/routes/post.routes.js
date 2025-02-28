@@ -7,9 +7,8 @@ const postController = require("../controllers/post.controller");
 
 const router = express.Router();
 router.post("/", uploadMemory.array("images"), validate(postSchema), CatchAsync(postController.createPost));
-router.get("/api/posts/all", postController.searchPosts);//API lọc bài đăng theo tên danh mục http://localhost:4000/api/posts/all?location=New%20York&min_price=100&max_price=500000
-router.get("/api/posts/newpost", postController.getNewPosts);
-router.get("/api/post/:id", postController.getPostById);
-router.get("/search", postController.searchPostsByProductName);
+router.get("/all", postController.searchPosts);//API lọc bài đăng theo tên danh mục http://localhost:4000/api/posts/all?location=New%20York&min_price=100&max_price=500000
+router.get("/newpost", postController.getNewPosts);
+router.get("/:id", postController.getPostById);
 
 module.exports = router;

@@ -12,8 +12,16 @@ const PostImage = sequelize.define(
       created_at: { type: DataTypes.DATE, defaultValue: Sequelize.literal("CURRENT_TIMESTAMP") },
     },
     { tableName: "post_images", timestamps: false }
-  );
+);
   
-//   PostImage.belongsTo(Post, { foreignKey: "post_id" });
+Post.hasMany(PostImage, {
+  foreignKey: "post_id",
+  onDelete: "CASCADE",
+  as: "images", // Alias đúng để match với truy vấn
+});
+PostImage.belongsTo(Post, {
+    foreignKey: 'post_id',
+    onDelete: 'CASCADE'
+});
   
-  module.exports = PostImage;
+module.exports = PostImage;
