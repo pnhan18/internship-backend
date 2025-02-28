@@ -24,7 +24,7 @@ const UserInfor = sequelize.define('UserInfor', {
         type: DataTypes.STRING(255),
         allowNull: false,
     },
-    avatar_url: {
+    avatar: {
         type: DataTypes.TEXT,
     },
     rating: {
