@@ -7,6 +7,7 @@ const cors = require("cors");
 const postRoutes = require("./routes/post.routes");
 const userRoutes = require("./routes/user.routes");
 const categories = require("./routes/category.routes");
+const adminUserRoutes= require("./routes/admin.user.routes");
 const errorMiddleware = require('./middlewares/error.middleware');
 const { NotFoundRequestError } = require('./core/error.response');
 
@@ -26,6 +27,7 @@ app.use("/api", postRoutes);
 app.use("/api", userRoutes);
 app.use("/api",categories );
 
+app.use("/api", adminUserRoutes);
 app.use("*", (req, res, next) => {
     next(new NotFoundRequestError());
 });
