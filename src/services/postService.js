@@ -6,7 +6,8 @@ const User = require("../models/User.model");
 const Report = require("../models/Report.model");
 const UserInfo = require("../models/UserInfo.model");
 const Database = require('../database/mysql.database');
-const UserService = require('./user.service')
+const UserService = require('./user.service');
+const { post } = require("../routes/post.routes");
 const Sequelize = Database.getInstance().sequelize;
 
 class PostService {
@@ -233,6 +234,17 @@ class PostService {
       console.error("❌ Lỗi khi lấy danh sách báo cáo:", error);
       throw new Error("Không thể lấy danh sách báo cáo");
     }
+  }
+  static async getSearchSuggestions(query) {
+    if (!query) return [];
+    return await Post.findAll({
+      attributes: ["product_name"],
+      where: {
+          product_name: { [Op.regexp]: `(^| )${query}` } // Tìm "query" ở đầu từ
+      },
+      order: [["product_name", "ASC"]],
+      limit: 5
+    });
   }
 }
 

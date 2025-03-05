@@ -11,4 +11,5 @@ router.get("/post/all", postController.searchPosts);//API lọc bài đăng theo
 router.get("/post/newpost", postController.getNewPosts);
 router.get("/post/:id", postController.getPostById);
 
+router.get("/search-suggestions", postController.getSuggestions);
 module.exports = router;

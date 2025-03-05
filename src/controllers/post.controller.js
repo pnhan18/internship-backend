@@ -103,6 +103,17 @@ class postController {
     }
     
   }
+  static async getSuggestions(req, res) {
+    try {
+      const { query } = req.query;
+      const suggestions = await PostService.getSearchSuggestions(query);
+      res.json(suggestions.map(s => s.product_name));
+  } catch (error) {
+      console.error("Error fetching search suggestions:", error);
+      res.status(500).json({ error: "Internal server error" });
+  }
+    
+  }
 }
 
 module.exports = postController;
