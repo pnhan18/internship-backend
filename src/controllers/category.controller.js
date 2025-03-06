@@ -49,12 +49,23 @@ class CategoryController {
       const isDeleted = await categoryService.deleteCategory(req.params.id);
       if (!isDeleted) return res.status(404).json({ success: false, message: "Danh mục không tồn tại!" });
 
+class CategoryController {
+    static async getAllCategoryNames(req, res) {
+        try {
+            const categoryNames = await CategoryService.getAllCategoryNames();
+            res.json(categoryNames);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
+
       res.status(200).json({ success: true, message: "Xóa danh mục thành công!" });
     } catch (error) {
       console.error("❌ Lỗi khi xóa danh mục:", error);
       res.status(500).json({ success: false, message: "Lỗi server!" });
     }
   }
+
 }
 
 module.exports = CategoryController;
