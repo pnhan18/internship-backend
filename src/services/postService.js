@@ -141,7 +141,7 @@ class PostService {
   }
   
   static async createPost(user_id, category_id, title, product_name, description, price, product_status, location, images) {
-    const transaction = await sequelize.transaction();
+    const transaction = await Sequelize.transaction();
     try {
       const newPost = await Post.create({
         user_id,
@@ -156,7 +156,7 @@ class PostService {
 
       const imageUrls = await Promise.all(images.map(async (image) => {
         const { imageName, url } = await UploadService.uploadImageFromLocal({ file: image });
-        await PostImage.create({ post_id: newPost.id, image: imageName }, { transaction });
+        await Post_images.create({ post_id: newPost.id, image: url }, { transaction });
         return url
       }));
 
