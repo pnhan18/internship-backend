@@ -14,7 +14,7 @@ const Post = sequelize.define(
     product_status: { type: DataTypes.STRING, allowNull: false },
     price: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
     location: { type: DataTypes.STRING, allowNull: true },
-    status: { type: DataTypes.ENUM("active", "pending", "block"), allowNull: false, defaultValue: "active" },
+    status: { type: DataTypes.ENUM("active", "pending", "block","sold","rejected"), allowNull: false, defaultValue: "pending" },
     created_at: { type: DataTypes.DATE, defaultValue: Sequelize.NOW  },
     updated_at: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
   },

@@ -57,12 +57,51 @@ class postController {
     }
   }
 
-
   static async createPost(req, res) {
     const { user_id, category_id, title, product_name, description, price, product_status, location } = req.body;
     const images = req.files;
     const newPost = await PostService.createPost(user_id, category_id, title, product_name, description, price, product_status, location, images);
     new CREATED("Tạo bài đăng thành công", newPost).send(res);
+  }
+
+  static async approvePost(req, res) {
+    try {
+        const { id } = req.params;
+        const post = await PostService.approvePostById(id);
+        res.json({ message: "Bài đăng đã được duyệt", post });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+  }
+  static async rejectPost(req, res) {
+    try {
+        const { id } = req.params;
+        const post = await PostService.rejectPostById(id);
+        res.json({ message: "Bài đăng đã bị từ chối", post });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+  }
+  static async deletePost(req, res) {
+    try {
+        const { id } = req.params;
+        const post = await PostService.deletePostById(id);
+        res.json({ message: "Bài đăng đã được xóa", post });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+  }
+  static async getReported(req, res) {
+    try {
+      const result = await PostService.getReportedPost();
+      if (!result.success) {
+        return res.status(404).json(result);
+      }
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+    
   }
 }
 
