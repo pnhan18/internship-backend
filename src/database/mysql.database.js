@@ -8,10 +8,25 @@ class Database {
     }
 
     async connect() {
-        this.sequelize = new Sequelize(dbConfig.db.database, dbConfig.db.username, dbConfig.db.password, {
-            host: dbConfig.db.host,
-            dialect: 'mysql'
-        });
+
+        this.sequelize = new Sequelize(
+            dbConfig.db.database,
+            dbConfig.db.username,
+            dbConfig.db.password,
+            {
+                host: dbConfig.db.host,
+                port: dbConfig.db.port || 3306,
+                dialect: 'mysql',
+                logging: false,
+                dialectOptions: {
+                    ssl: {
+                        require: true,
+                        rejectUnauthorized: false 
+                    }
+                }
+            }
+        );
+
         try {
             await this.sequelize.authenticate();
             console.log('Connection has been established successfully.');
