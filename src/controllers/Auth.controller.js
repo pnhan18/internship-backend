@@ -1,5 +1,6 @@
 const AuthService = require("../services/Auth.service");
 const { CREATED } = require("../core/success.response");
+const { OK } = require("../core/success.response");
 
 class AuthController {
     static signUp = async (req, res) => {

@@ -66,12 +66,6 @@ class AuthService {
         }
 
         const resetToken = Authentication.generateResetToken(email);
-        const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 giờ
-
-        await User.update(
-            { reset_token: resetToken, reset_token_expiry: resetTokenExpiry },
-            { where: { email } }
-        );
 
         const transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -101,8 +95,6 @@ class AuthService {
         const user = await User.findOne({
             where: {
                 email: decoded.email,
-                reset_token: token,
-                reset_token_expiry: { [Sequelize.Op.gt]: new Date() }
             }
         });
 
@@ -112,7 +104,7 @@ class AuthService {
 
         const hashedPassword = await Authentication.passwordHash(password);
         await User.update(
-            { password_hash: hashedPassword, reset_token: null, reset_token_expiry: null },
+            { password_hash: hashedPassword},
             { where: { email: decoded.email } }
         );
     }
