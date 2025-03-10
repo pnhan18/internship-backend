@@ -6,8 +6,11 @@ const User = require("../models/User.model");
 const Report = require("../models/Report.model");
 const UserInfo = require("../models/UserInfo.model");
 const Database = require('../database/mysql.database');
+const PostImage = require("../models/PostImage.model");
+const { BadRequestError } = require("../core/error.response");
 const UserService = require('./user.service')
 const Sequelize = Database.getInstance().sequelize;
+const UploadService = require('./Upload.service');
 
 class PostService {
   static async getALLPostsByFilters( filters = {}, pagination = { page: 1, pageSize: 10 },status="active") {

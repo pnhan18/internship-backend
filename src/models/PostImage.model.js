@@ -1,4 +1,4 @@
-const { DataTypes, Sequelize } = require('sequelize');
+const { DataTypes } = require('sequelize');
 const Database = require('../database/mysql.database');
 const sequelize = Database.getInstance().sequelize;
 const Post = require('./Post.model');
