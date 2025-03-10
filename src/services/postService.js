@@ -1,10 +1,14 @@
 const { Op } = require("sequelize");
-const Post = require("../models/Post");
-const Category = require("../models/Category");
-const Post_images = require("../models/Post_images");
+const Post = require("../models/Post.model");
+const Category = require("../models/Category.model");
+const Post_images = require("../models/PostImage.model");
+const User = require("../models/User.model");
+const Report = require("../models/Report.model");
+const UserInfo = require("../models/UserInfo.model");
 const Database = require('../database/mysql.database');
 const PostImage = require("../models/PostImage.model");
 const { BadRequestError } = require("../core/error.response");
+const UserService = require('./user.service')
 const Sequelize = Database.getInstance().sequelize;
 const UploadService = require('./Upload.service');
 
@@ -119,6 +123,16 @@ class PostService {
             attributes: ["image_url"],
             as: "images",
           },
+          {
+            model: User, // Lấy thông tin người đăng bài
+            attributes: ["email"],
+            include: [
+              {
+                model: UserInfo, // Lấy thông tin chi tiết từ User_info
+                attributes: ["name", "address", "phone","avatar_url","rating"],
+              },
+            ],
+          },
         ],
       });
   
@@ -145,7 +159,7 @@ class PostService {
 
       const imageUrls = await Promise.all(images.map(async (image) => {
         const { imageName, url } = await UploadService.uploadImageFromLocal({ file: image });
-        await PostImage.create({ post_id: newPost.id, image: imageName }, { transaction });
+        await Post_images.create({ post_id: newPost.id, image: url }, { transaction });
         return url
       }));
 
@@ -161,6 +175,66 @@ class PostService {
       console.error(error);
       await transaction.rollback();
       throw new BadRequestError("Đã xảy ra lỗi khi tạo bài đăng, vui lòng thử lại.");
+    }
+  }
+  static async approvePostById(postId) {
+    try {
+      const post = await Post.findByPk(postId);
+      if (!post) {
+        throw new Error("Bài đăng không tồn tại");
+      }
+  
+      post.status = "active";
+      const updatedPost = await post.save();
+  
+      if (!updatedPost) {
+        throw new Error("Không thể cập nhật trạng thái bài đăng");
+      }
+  
+      return updatedPost;
+    } catch (error) {
+      console.error("Lỗi duyệt bài đăng:", error.message);
+      throw new Error("Đã xảy ra lỗi khi duyệt bài đăng. Vui lòng thử lại!");
+    }
+  }
+  
+  static async rejectPostById(postId) {
+    console.log("tooi da ow day");
+    const post = await Post.findByPk(postId);
+    if (!post) throw new Error("Bài đăng không tồn tại");
+    post.status = "rejected";
+    await post.save();
+    return post;
+  }
+
+  static async deletePostById(postId) {
+    const post = await Post.findByPk(postId);
+    if (!post) throw new Error("Bài đăng không tồn tại");
+
+    post.status = "deleted";
+    await post.save();
+    return post;
+  }
+  static async getReportedPost() {
+    try {
+      const reports = await Report.findAll({
+        include: [
+          {
+            model: Post,
+            attributes: ["id", "title", "product_name", "description", "price"],
+            required: false, // Lấy cả báo cáo của bài đăng đã bị xóa
+          },
+          {
+            model: User,
+            attributes: ["id", "email"],
+          },
+        ],
+      });
+
+      return reports;
+    } catch (error) {
+      console.error("❌ Lỗi khi lấy danh sách báo cáo:", error);
+      throw new Error("Không thể lấy danh sách báo cáo");
     }
   }
 }

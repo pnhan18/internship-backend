@@ -7,6 +7,9 @@ const cors = require("cors");
 const postRoutes = require("./routes/post.routes");
 const userRoutes = require("./routes/user.routes");
 const categories = require("./routes/category.routes");
+const adminUserRoutes= require("./routes/admin.user.routes");
+const adminPostRoutes = require("./routes/admin.post.routes");
+const reportRoutes = require("./routes/report.routes");
 const errorMiddleware = require('./middlewares/error.middleware');
 const { NotFoundRequestError } = require('./core/error.response');
 const reviewRoutes = require('./routes/Review.routes');
@@ -32,7 +35,9 @@ app.use("/api/posts", postRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/categories",categories );
 app.use("/api/reviews", reviewRoutes);
-
+app.use("/api", reportRoutes);
+app.use("/api", adminUserRoutes);
+app.use("/api", adminPostRoutes);
 app.use("*", (req, res, next) => {
     next(new NotFoundRequestError());
 });

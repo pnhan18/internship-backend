@@ -1,16 +1,33 @@
-const Category = require("../models/Category");
+const Category = require("../models/Category.model");
 
 class CategoryService {
-  async getAllCategoryNames() {
-    try {
-      const categories = await Category.findAll({
-        attributes: ["name"], // Chỉ lấy cột 'name'
-      });
-      return categories.map(cat => cat.name);
-    } catch (error) {
-      throw new Error(error.message);
-    }
+  static async getAllCategories() {
+    return await Category.findAll();
+  }
+
+  static async getCategoryById(id) {
+    return await Category.findByPk(id);
+  }
+
+  static async createCategory(data) {
+    return await Category.create(data);
+  }
+
+  static async updateCategory(id, data) {
+    const category = await Category.findByPk(id);
+    if (!category) return null;
+
+    await category.update(data);
+    return category;
+  }
+
+  static async deleteCategory(id) {
+    const category = await Category.findByPk(id);
+    if (!category) return false;
+
+    await category.destroy();
+    return true;
   }
 }
 
-module.exports = new CategoryService();
+module.exports = CategoryService;

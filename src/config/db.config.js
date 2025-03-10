@@ -19,7 +19,7 @@ class DevConfig extends MySQLConfig {
     this.db = {
       ...this.db,
       username: process.env.DEV_DB_USERNAME || "dev_user",
-      password: process.env.DEV_DB_PASSWORD || "dev_password",
+      password: process.env.DEV_DB_PASSWORD || "",
       database: process.env.DEV_DB_NAME || "dev_db",
     };
   }
