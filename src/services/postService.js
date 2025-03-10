@@ -3,7 +3,10 @@ const Post = require("../models/Post");
 const Category = require("../models/Category");
 const Post_images = require("../models/Post_images");
 const Database = require('../database/mysql.database');
+const PostImage = require("../models/PostImage.model");
+const { BadRequestError } = require("../core/error.response");
 const Sequelize = Database.getInstance().sequelize;
+const UploadService = require('./Upload.service');
 
 class PostService {
   static async getALLPostsByFilters( filters = {}, pagination = { page: 1, pageSize: 10 },status="active") {
@@ -127,7 +130,7 @@ class PostService {
   }
   
   static async createPost(user_id, category_id, title, product_name, description, price, product_status, location, images) {
-    const transaction = await sequelize.transaction();
+    const transaction = await Sequelize.transaction();
     try {
       const newPost = await Post.create({
         user_id,

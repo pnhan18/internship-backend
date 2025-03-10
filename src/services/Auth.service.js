@@ -1,7 +1,7 @@
 const { ConflictRequestError, BadRequestError } = require('../core/error.response');
 const Authentication = require('../utils/Authentication');
 const User = require('../models/User.model');
-const UserInfor = require('../models/UserInfor.model');
+const UserInfor = require('../models/UserInfo.model');
 const sequelize = require('../database/mysql.database').getInstance().sequelize;
 
 class AuthService {

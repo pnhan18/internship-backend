@@ -9,11 +9,17 @@ const userRoutes = require("./routes/user.routes");
 const categories = require("./routes/category.routes");
 const errorMiddleware = require('./middlewares/error.middleware');
 const { NotFoundRequestError } = require('./core/error.response');
+const reviewRoutes = require('./routes/Review.routes');
 
 const app = express();
 
 // Middleware
-app.use(cors()); // Hỗ trợ CORS
+app.use(cors({
+  origin: '*', 
+  methods: 'GET,POST,PUT,DELETE',
+  allowedHeaders: 'Content-Type,Authorization',
+  credentials: true
+})); // Hỗ trợ CORS
 app.use(express.json()); // Xử lý JSON request body
 app.use(express.urlencoded({ extended: true })); // Hỗ trợ xử lý form data
 
@@ -25,6 +31,7 @@ app.use('/api', AuthRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/categories",categories );
+app.use("/api/reviews", reviewRoutes);
 
 app.use("*", (req, res, next) => {
     next(new NotFoundRequestError());
