@@ -55,7 +55,8 @@ class AuthService {
         return {
             user: {
                 email: holder.email,
-                role: holder.role
+                role: holder.role,
+                userId: holder.id
             },
             token: {
                 accessToken,
