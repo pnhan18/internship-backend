@@ -4,6 +4,7 @@ const Category = require("../models/Category.model");
 const Post_images = require("../models/PostImage.model");
 const User = require("../models/User.model");
 const Report = require("../models/Report.model");
+const Favorite = require("../models/Favorite.model");
 const UserInfo = require("../models/UserInfo.model");
 const Database = require('../database/mysql.database');
 const PostImage = require("../models/PostImage.model");
@@ -36,7 +37,7 @@ class PostService {
         whereCondition.product_name = { [Op.like]: `%${filters.product_name}%` };
       }
       if (filters.location) {
-        whereCondition.location = filters.location;
+        whereCondition.location = { [Op.like]: `%${filters.location}%` };
       }
       if (filters.minPrice) {
         whereCondition.price = { [Op.gte]: filters.minPrice };
@@ -235,6 +236,144 @@ class PostService {
     } catch (error) {
       console.error("❌ Lỗi khi lấy danh sách báo cáo:", error);
       throw new Error("Không thể lấy danh sách báo cáo");
+    }
+  }
+  static async getPostsByUserEmail(email, status) {
+    try {
+      // Tìm user theo email
+      const user = await User.findOne({ where: { email } });
+      if (!user) {
+          return { success: false, message: 'Người dùng không tồn tại' };
+      }
+
+      // Điều kiện lọc
+      const whereCondition = { user_id: user.id };
+      if (status) {
+          whereCondition.status = status; // Lọc theo trạng thái nếu có
+      }
+
+      // Lấy danh sách bài đăng với điều kiện lọc
+      const posts = await Post.findAll({ 
+        where: whereCondition,
+        order: [["created_at", "DESC"]],
+        include: [
+          {
+            model: Post_images,  // Bảng chứa ảnh
+            attributes: ["image_url"], // Chỉ lấy ảnh
+            required: false,
+            as: "images", // Không bắt buộc phải có ảnh
+            where: { id: { [Op.eq]: Sequelize.literal(`(SELECT MIN(id) FROM post_images WHERE post_images.post_id = Post.id)`) } } // Chỉ lấy ảnh đầu tiên
+          }
+        ]
+      });
+
+      return { success: true, data: posts };
+    } catch (error) {
+      console.error(error);
+      return { success: false, message: 'Lỗi server' };
+    }
+  }
+  static async updatePost(postId, updateData) {
+    try {
+        // Tìm bài đăng và kiểm tra quyền sở hữu
+        const post = await Post.findOne({ where: { id: postId } });
+        if (!post) {
+            return { success: false, message: 'Bài đăng không tồn tại ' };
+        }
+
+        // Cập nhật bài đăng
+        await post.update(updateData);
+
+        return { success: true, message: 'Cập nhật bài đăng thành công', data: post };
+    } catch (error) {
+        console.error(error);
+        return { success: false, message: 'Lỗi server' };
+    }
+  }
+  static async addFavorite(email, postId) {
+    try {
+        // Kiểm tra người dùng tồn tại
+        const user = await User.findOne({ where: { email } });
+        if (!user) {
+            return { success: false, message: "Người dùng không tồn tại." };
+        }
+
+        // Kiểm tra bài đăng tồn tại
+        const post = await Post.findByPk(postId);
+        if (!post) {
+            return { success: false, message: "Bài đăng không tồn tại." };
+        }
+
+        // Kiểm tra xem bài đăng đã được thêm vào yêu thích chưa
+        const existingFavorite = await Favorite.findOne({
+            where: { user_id: user.id, post_id: postId }
+        });
+
+        if (existingFavorite) {
+            return { success: false, message: "Bài đăng đã có trong danh sách yêu thích." };
+        }
+
+        // Thêm bài đăng vào danh sách yêu thích
+        await Favorite.create({
+            user_id: user.id,
+            post_id: postId,
+            status: 'saved'
+        });
+
+        return { success: true, message: "Đã thêm vào danh sách yêu thích." };
+    } catch (error) {
+        console.error(error);
+        return { success: false, message: "Lỗi server." };
+    }
+  }
+  static async removeFavorite(email, post_id) {
+    try {
+        const user = await User.findOne({ where: { email } });
+        if (!user) {
+            return false;
+        }
+
+        const deleted = await Favorite.destroy({ 
+            where: { user_id: user.id, post_id } 
+        });
+
+        return deleted > 0; 
+    } catch (error) {
+        console.error("Lỗi khi xóa bài đăng yêu thích:", error);
+        throw error;
+    }
+  }
+  static async getFavoriteList(email) {
+    try {
+        const user = await User.findOne({ where: { email } });
+        if (!user) {
+          return { success: false, message: "Không tìm thấy người dùng." };
+        }
+
+        const favorites = await Favorite.findAll({
+            where: { user_id: user.id },
+            include: [
+                {
+                    model: Post,
+                    attributes: ['id', 'title', 'product_name', 'description', 'price', 'location', 'status'],
+                    include: [
+                      {
+                        model: Post_images,  // Bảng chứa ảnh
+                        attributes: ["image_url"], // Chỉ lấy ảnh
+                        required: false,
+                        as: "images", // Không bắt buộc phải có ảnh
+                        where: { id: { [Op.eq]: Sequelize.literal(`(SELECT MIN(id) FROM post_images WHERE post_images.post_id = Post.id)`) } } // Chỉ lấy ảnh đầu tiên
+                      }
+                    ]
+                }
+                
+            ]
+        });
+
+        return favorites.map(fav => fav.Post);
+    } catch (error) {
+        console.error("Lỗi khi lấy danh sách yêu thích:", error);
+        throw error;
     }
   }
 }
