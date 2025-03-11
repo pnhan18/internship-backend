@@ -179,8 +179,16 @@ class postController {
         return res.status(500).json({ message: "Lỗi server!" });
     }
   }
-
-
+  static async Suggestions(req, res) {
+    try {
+      const { query } = req.query;
+      const suggestions = await PostService.getSuggestions(query);
+      return res.json(suggestions.map(s => s.product_name));
+    } catch (error) {
+      console.error("Error fetching search suggestions:", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  }
 }
 
 module.exports = postController;

@@ -376,6 +376,17 @@ class PostService {
         throw error;
     }
   }
+  static async getSuggestions(query) {
+    if (!query) return [];
+    return await Post.findAll({
+      attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('product_name')), 'product_name']], // Lấy giá trị duy nhất
+      where: {
+        product_name: { [Op.regexp]: `(^| )${query}` }
+      },
+      order: [["product_name", "ASC"]],
+      limit: 5
+    });
+  }
 }
 
 module.exports = PostService;
