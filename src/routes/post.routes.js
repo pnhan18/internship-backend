@@ -10,5 +10,9 @@ router.post("/post/", uploadMemory.array("images"), validate(postSchema), CatchA
 router.get("/post/all", postController.searchPosts);//API lọc bài đăng theo tên danh mục http://localhost:4000/api/post/all?location=New%20York&min_price=100&max_price=500000
 router.get("/post/newpost", postController.getNewPosts);
 router.get("/post/:id", postController.getPostById);
-
+router.get("/user/:email", postController.getPostsByUserEmail);
+router.put('/update/:postId', postController.updatePost);
+router.post('/addfavorite',postController.addFavorite);
+router.delete('/removefavorite', postController.removeFavorite);
+router.get('/getfavorite', postController.getFavoriteList);
 module.exports = router;

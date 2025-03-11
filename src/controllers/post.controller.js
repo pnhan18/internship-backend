@@ -99,10 +99,88 @@ class postController {
       }
       res.status(200).json(result);
     } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
+      res.status(500).json({ success: false, message: "Bài đăng đã được xóa" });
     }
     
   }
+  static async getPostsByUserEmail(req, res) {
+    const { email } = req.params;
+    const { status } = req.query; // Lấy trạng thái từ query parameter
+
+    const result = await PostService.getPostsByUserEmail(email, status);
+
+    if (!result) {
+      return res.status(404).json({ message: "Không có bài đăng nào" });
+    }
+
+    res.json(result.data);
+  }
+  static async updatePost(req, res) {
+    const { postId } = req.params;
+    const {...updateData } = req.body; // Lấy email và dữ liệu cập nhật từ body
+
+    const result = await PostService.updatePost(postId, updateData);
+
+    if (!result.success) {
+        return res.status(400).json({ message: result.message });
+    }
+
+    res.json(result);
+  }
+  static async addFavorite(req, res) {
+    try {
+        const { email, postId } = req.body;
+
+        if (!email || !postId) {
+            return res.status(400).json({ success: false, message: "Email và postId là bắt buộc." });
+        }
+
+        const result = await PostService.addFavorite(email, postId);
+
+        if (!result.success) {
+            return res.status(400).json(result);
+        }
+
+        return res.status(201).json(result);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: "Lỗi server." });
+    }
+  }
+  static async removeFavorite(req, res) {
+    try {
+        const { email, post_id } = req.body;
+        if (!email || !post_id) {
+            return res.status(400).json({ message: "Email và post_id là bắt buộc." });
+        }
+
+        const result = await PostService.removeFavorite(email, post_id);
+        if (result) {
+            return res.json({ message: "Bài đăng yêu thích đã được xóa." });
+        } else {
+            return res.status(404).json({ message: "Không tìm thấy bài đăng yêu thích." });
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Lỗi server!" });
+    }
+  }
+  static async getFavoriteList(req, res) {
+    try {
+        const { email } = req.query;
+        if (!email) {
+            return res.status(400).json({ message: "Email là bắt buộc." });
+        }
+
+        const favorites = await PostService.getFavoriteList(email);
+        return res.json({ data: favorites });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Lỗi server!" });
+    }
+  }
+
+
 }
 
 module.exports = postController;
