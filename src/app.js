@@ -12,8 +12,10 @@ const reportRoutes = require("./routes/report.routes");
 const errorMiddleware = require('./middlewares/error.middleware');
 const { NotFoundRequestError } = require('./core/error.response');
 const reviewRoutes = require('./routes/Review.routes');
+const compression = require('compression');
 
 const app = express();
+app.use(compression());
 
 // Middleware
 app.use(cors({

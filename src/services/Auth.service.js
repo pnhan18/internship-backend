@@ -15,8 +15,8 @@ class AuthService {
             throw new ConflictRequestError('Email already exists');
         }
         const hashedPassword = await Authentication.passwordHash(password);
+        const transaction = await sequelize.transaction();
         try {
-            const transaction = await sequelize.transaction();
             const user = await User.create({
                 email,
                 password_hash: hashedPassword
