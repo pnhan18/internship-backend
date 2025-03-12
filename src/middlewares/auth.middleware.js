@@ -1,6 +1,6 @@
 const { AuthFailureError } = require("../core/error.response");
 const CatchAsync = require("../utils/CatchAsync");
-const Authentication = require("../utils/authentication");
+const Authentication = require("../utils/Authentication");
 const UserService = require("../services/user.service");
 require("dotenv").config();
 

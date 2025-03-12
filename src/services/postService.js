@@ -159,7 +159,7 @@ class PostService {
       }, { transaction });
 
       const imageUrls = await Promise.all(images.map(async (image) => {
-        const { imageName, url } = await UploadService.uploadImageFromLocal({ file: image });
+        const url = await UploadService.uploadImageFromLocal({ file: image });
         await Post_images.create({ post_id: newPost.id, image: url }, { transaction });
         return url
       }));
