@@ -14,13 +14,13 @@ class UserController {
         try {
             const emailUser = req.params.emailUser;
             const { email, name, address, phone, avatar_url } = req.body;
-            const updatedUser = await UserService.updateUserByEmail(emailUser, email, name, address, phone, avatar_url);
+            const updatedUser = await UserService.updateUser(emailUser, email, name, address, phone, avatar_url);
 
             if (!updatedUser) {
                 return res.status(404).json({ message: 'User not found' });
             }
 
-            return res.status(200).json({ message: 'User updated successfully'});
+            return res.status(200).json({ message: 'User updated successfully',updatedUser});
         } catch (error) {
             return res.status(500).json({ message: 'Internal server error', error: error.message });
         }
