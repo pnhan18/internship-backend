@@ -63,6 +63,28 @@ class AuthService {
             }
         }
     }
+    static changePassword = async (req) => {
+        const { oldPassword, newPassword } = req.body;
+        const user = req.user;
+    
+        if (!user) {
+            throw new BadRequestError('Người dùng không tồn tại');
+        }
+        if (!oldPassword || !newPassword) {
+            throw new BadRequestError('Mật khẩu cũ và mới là bắt buộc');
+        }
+    
+        const isMatch = await Authentication.passwordCompare(oldPassword, user.password_hash);
+        if (!isMatch) {
+            throw new BadRequestError('Mật khẩu cũ không chính xác');
+        }
+        const hashedNewPassword = await Authentication.passwordHash(newPassword);
+        await User.update(
+            { password_hash: hashedNewPassword },
+            { where: { id: user.id } }
+        );
+        return { message: 'Thay đổi mật khẩu thành công' };
+    };
 }
 
 module.exports = AuthService;

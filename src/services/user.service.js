@@ -2,6 +2,10 @@ const bcrypt = require("bcrypt");
 const User = require("../models/User.model");
 const UserInfo = require("../models/UserInfo.model");
 class UserService {
+  static async getUserById(id) {
+    return await User.findByPk(id);
+  }
+  
     static async getUserByEmail(email) {
         const user = await User.findOne({
             where: { email: email },

@@ -1,5 +1,5 @@
 const AuthService = require("../services/Auth.service");
-const { CREATED } = require("../core/success.response");
+const { CREATED, OK } = require("../core/success.response");
 
 class AuthController {
     static signUp = async (req, res) => {
@@ -12,6 +12,10 @@ class AuthController {
         const { email, password } = req.body;
         new CREATED("Successfully logged in!", await AuthService.login(email, password)).send(res);
     }
+    static changePassword =  async (req, res)  => {
+        const result = await AuthService.changePassword(req);
+        new OK("changepass success").send(res);
+    };
 }
 
 module.exports = AuthController;
