@@ -14,7 +14,7 @@ class UserController {
         try {
             const emailUser = req.params.emailUser;
             const { email, name, address, phone, avatar_url } = req.body;
-            const updatedUser = await UserService.updateUser(emailUser, email, name, address, phone, avatar_url);
+            const updatedUser = await UserService.updateUserByEmail(emailUser, email, name, address, phone, avatar_url);
 
             if (!updatedUser) {
                 return res.status(404).json({ message: 'User not found' });

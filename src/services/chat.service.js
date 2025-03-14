@@ -1,7 +1,8 @@
-const { where, Op } = require('sequelize');
+const { where, Op, Sequelize } = require('sequelize');
 const Message = require('../models/Message.model');
 const User = require('../models/User.model');
 const { validateMessage } = require('../validators/message.validator');
+const UserInfo = require('../models/UserInfo.model');
 let user = new Map();
 
 class ChatService {
@@ -111,6 +112,36 @@ class ChatService {
         }
     }
 
+    static async sendPendingMessages(userId) {
+        const pendingMessages = await Message.findAll({
+            where: {
+                receiverId: userId,
+                status: 'sent'
+            }
+        });
+        if (pendingMessages.length === 0) { return; }
+
+        const senderSocket = user.get(userId);
+        if (!senderSocket) {
+            return;
+        }
+
+        pendingMessages.forEach(async message => {
+            const senderSocket = user.get(message.receiverId);
+            if (senderSocket && senderSocket.readyState === WebSocket.OPEN) {
+                const response = JSON.stringify({
+                    type: 'chat',
+                    fromUserID: message.senderId,
+                    postId: message.postId,
+                    content: message.content,
+                    timestamp: message.createdAt.toISOString()
+                });
+                senderSocket.send(response);
+                await this.updateMessageStatus(message.id, "received");
+            }
+        });
+    }
+
     static async saveMessage(senderId, receiverId, postId, content) {
         return (await Message.create({
             senderId,
@@ -118,6 +149,68 @@ class ChatService {
             postId,
             content
         })).id;
+    }
+
+    static async getUserConversations(userID) {
+        const conversations = await Message.findAll({
+            attributes: [
+                [Sequelize.literal("DISTINCT LEAST(sender_id, receiver_id)"), "user1"],
+                [Sequelize.literal("GREATEST(sender_id, receiver_id)"), "user2"]
+            ],
+            where: {
+                [Op.or]: [{ senderId: userID }, { receiverId: userID }]
+            }
+        });
+
+        const userIDs = new Set();
+        conversations.forEach(c => {
+            userIDs.add(c.dataValues.user1);
+            userIDs.add(c.dataValues.user2);
+        });
+        userIDs.delete(+userID);
+
+        const users = await User.findAll({
+            where: { id: { [Op.in]: Array.from(userIDs) } },
+            attributes: ["id", "email"],
+            include: [
+                {
+                    model: UserInfo,
+                    attributes: ["name", "avatar_url"]
+                }
+            ]
+        });
+
+        const recentMessages = await Message.findAll({
+            where: {
+                [Op.or]: Array.from(userIDs).map(id => ({
+                    senderId: userID,
+                    receiverId: id
+                })).concat(Array.from(userIDs).map(id => ({
+                    senderId: id,
+                    receiverId: userID
+                })))
+            },
+            attributes: ["senderId", "receiverId", "content", "status", "createdAt"],
+            order: [["createdAt", "DESC"]],
+            limit: 1
+        });
+
+        const conversationsList = users.map(user => {
+            const lastMessage = recentMessages.find(
+                msg => msg.senderId === user.id || msg.receiverId === user.id
+            );
+
+            return {
+                userId: user.dataValues.id,
+                username: user.UserInfo.dataValues.name,
+                avatar: user.UserInfo.dataValues.avatar_url,
+                lastMessage: lastMessage ? lastMessage.content : null,
+                lastMessageStatus: lastMessage ? lastMessage.status : null,
+                lastMessageTime: lastMessage ? lastMessage.createdAt : null
+            };
+        });
+
+        return conversationsList;
     }
 
     static async updateMessageStatus(messageID, status) {

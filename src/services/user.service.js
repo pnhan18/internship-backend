@@ -29,7 +29,7 @@ class UserService {
       rating: user.UserInfo?.rating || null
     };
   }
-  static async updateUser(emailUser, email, name, address, phone, avatar_url) {
+  static async updateUserByEmail(emailUser, email, name, address, phone, avatar_url) {
     // Cập nhật bảng user
     const user = await User.findOne({ where: { email: emailUser } });
     if (!user) return null;
