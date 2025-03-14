@@ -9,9 +9,9 @@ const categories = require("./routes/category.routes");
 const adminUserRoutes= require("./routes/admin.user.routes");
 const adminPostRoutes = require("./routes/admin.post.routes");
 const reportRoutes = require("./routes/report.routes");
-const errorMiddleware = require('./middlewares/error.middleware');
 const { NotFoundRequestError } = require('./core/error.response');
 const reviewRoutes = require('./routes/Review.routes');
+const chatRoutes = require('./routes/chat.routes');
 
 const app = express();
 
@@ -37,12 +37,10 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api", reportRoutes);
 app.use("/api", adminUserRoutes);
 app.use("/api", adminPostRoutes);
+app.use("/api/chat", chatRoutes);
 app.use("*", (req, res, next) => {
     next(new NotFoundRequestError());
 });
 app.use(handleErrorsMiddeleware);
-
-// Middleware xử lý lỗi
-app.use(errorMiddleware);
 
 module.exports = app;

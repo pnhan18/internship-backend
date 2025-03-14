@@ -1,6 +1,6 @@
 const { AuthFailureError } = require("../core/error.response");
 const CatchAsync = require("../utils/CatchAsync");
-const Authentication = require("../utils/authentication");
+const Authentication = require("../utils/Authentication");
 const UserService = require("../services/user.service");
 require("dotenv").config();
 
@@ -28,7 +28,7 @@ exports.authentication = CatchAsync(async (req, res, next) => {
             throw new AuthFailureError("Invalid token");
         }
 
-        const user = await userService.findUserById(decoded.userId);
+        const user = await UserService.getUserById(decoded.userId);
         if (!user) {
             throw new AuthFailureError("User not found");
         }

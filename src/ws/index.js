@@ -21,6 +21,7 @@ async function setupWebSocket(server) {
             ChatService.addSocket(ws.user.id, ws);
 
             ws.send(JSON.stringify({ type: "system", message: "Kết nối websocket thành công" }));
+            await ChatService.sendPendingMessages(ws.user.id);
 
             ws.on("message", (message) => {
                 ChatService.handleMessage(ws.user.id, message);
